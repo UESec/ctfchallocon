@@ -1,0 +1,33 @@
+services:
+  ctf_webserver:
+    build: .
+    container_name: orange-cake-webserver
+    restart: unless-stopped
+    ports:
+      - "8044:80"
+    networks:
+      - orange_cake_net
+    depends_on:
+      - ctf_redis
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  ctf_redis:
+    image: redis:7-alpine
+    container_name: orange-cake-redis
+    restart: unless-stopped
+    command: ["redis-server", "--bind", "0.0.0.0", "--protected-mode", "no"]
+    networks:
+      - orange_cake_net
+    expose:
+      - "6379"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+networks:
+  orange_cake_net:
+    driver: bridge

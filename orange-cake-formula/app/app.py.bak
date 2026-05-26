@@ -1,0 +1,109 @@
+from flask import Flask, render_template, request
+import redis
+import os
+import traceback
+
+app = Flask(__name__)
+
+REDIS_HOST = os.environ.get("REDIS_HOST", "ctf_redis")
+REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
+
+FLAG_PATH = "/opt/orange-plant/classified/orange_cake_enrichment_formula.flag"
+
+
+def get_redis_client():
+    return redis.Redis(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        socket_connect_timeout=1,
+        socket_timeout=1,
+        decode_responses=True
+    )
+
+
+def seed_redis():
+    """
+    Redis is hier onderdeel van het verhaal.
+    De echte flag staat bewust niet in Redis, maar op de webserver.
+    Redis bevat alleen interne reactor-notities en formulecontext.
+    """
+    try:
+        r = get_redis_client()
+        r.set("plant:name", "Orange Power Plant")
+        r.set("reactor:mode", "citrus-critical")
+        r.set("orange_cake:target_enrichment", "8%")
+        r.set("orange_cake:status", "formula calculator online")
+        r.set(
+            "operator:note",
+            "The calculator talks to the backup segment when formulas need validation."
+        )
+        r.set(
+            "soc:hint",
+            "When the formula speaks too loudly, someone on the backup server may hear it."
+        )
+    except Exception:
+        pass
+
+
+@app.route("/", methods=["GET"])
+def root():
+    return render_template("challenge.html")
+
+
+@app.route("/calculator", methods=["GET"])
+def calculator():
+    return render_template("index.html", result=None, error=None, formula="")
+
+
+@app.route("/calculate", methods=["POST"])
+def calculate():
+    formula = request.form.get("formula", "")
+
+    if not formula.strip():
+        return render_template(
+            "index.html",
+            result=None,
+            error="No formula submitted. The reactor refuses to enrich empty cake.",
+            formula=formula
+        )
+
+    try:
+        """
+        Intentionally vulnerable CTF logic.
+
+        Normal use:
+          input: 5l orangejuice
+          output: 5L ORANGEJUICE
+
+        The unsafe eval below is the challenge.
+        It simulates a broken internal formula parser that was supposed to
+        uppercase formulas, but instead evaluates constructed Python code.
+        """
+        result = eval("'" + formula + "'.upper()")
+
+        return render_template(
+            "index.html",
+            result=result,
+            error=None,
+            formula=formula
+        )
+
+    except Exception as e:
+        debug = traceback.format_exc()
+        return render_template(
+            "index.html",
+            result=None,
+            error=f"Formula parser failed: {e}",
+            debug=debug,
+            formula=formula
+        )
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return {"status": "ok", "service": "orange-cake-formula"}
+
+
+if __name__ == "__main__":
+    seed_redis()
+    app.run(host="0.0.0.0", port=80)

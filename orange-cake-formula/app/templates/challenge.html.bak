@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orange Cake Formula</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="page">
+    <section class="panel wide">
+      <div class="statusbar">
+        <span class="dot"></span>
+        <span>OPP INTERNAL SYSTEM</span>
+        <span class="status-right">REACTOR FORMULA NODE</span>
+      </div>
+
+      <h1>Orange Cake Formula</h1>
+      <p class="lead">
+        Internal calculator for citrus enrichment batches used by the Orange Power Plant reactor team.
+      </p>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Target batch</h2>
+          <p>
+            The reactor requires orange cake enriched to <strong>8%</strong>. Operators use this console
+            to validate dummy ingredient ratios before a batch is sent to backup validation.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Operator note</h2>
+          <p>
+            Formula strings are normalized by the application before they are processed by the backend.
+            Some test values may behave differently than plain text.
+          </p>
+        </div>
+      </div>
+
+      <div class="sample">
+        <span>Example operator input</span>
+        <code>5 * orangejuice + 5 * orangium</code>
+      </div>
+
+      <p class="small">
+        OPP-REDIS-CALC-01 · Internal Redis Formula Console · Backup validation route enabled
+      </p>
+
+      <a class="button" href="/calculator">Open calculator</a>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orange Cake Calculator</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="reactor-page">
+    <section class="reactor-shell">
+
+      <div class="reactor-header">
+        <div>
+          <div class="eyebrow">
+            <span class="pulse"></span>
+            CITRUS CRITICAL CONTROL
+          </div>
+          <h1>Orange Cake Calculator</h1>
+          <p>Internal enrichment batch console</p>
+        </div>
+
+        <div class="target-box">
+          <span>TARGET</span>
+          <strong>8%</strong>
+        </div>
+      </div>
+
+      <div class="dashboard">
+        <div class="screen">
+          <span>CORE TEMP</span>
+          <strong>742°C</strong>
+          <div class="bar"><i style="width: 74%"></i></div>
+        </div>
+
+        <div class="screen warning">
+          <span>ORANGIUM FLOW</span>
+          <strong>5.0 g/s</strong>
+          <div class="bar"><i style="width: 57%"></i></div>
+        </div>
+
+        <div class="screen danger-screen">
+          <span>CITRUS PRESSURE</span>
+          <strong>83%</strong>
+          <div class="bar"><i style="width: 83%"></i></div>
+        </div>
+
+        <div class="screen">
+          <span>REDIS LINK</span>
+          <strong>{{ status.redis if status else "SYNC" }}</strong>
+          <div class="blink-line"></div>
+        </div>
+      </div>
+
+      <div class="reactor-layout">
+        <section class="calculator-card">
+          <div class="calc-top">
+            <h2>Formula Input</h2>
+            <span>Batch mode: normalize</span>
+          </div>
+
+          <form method="POST" action="/calculate">
+            <textarea
+              id="formula"
+              name="formula"
+              spellcheck="false"
+              placeholder="Example: 5L orangejuice + 5gr orangium">{{ formula }}</textarea>
+
+            <div class="keypad">
+              <button type="button" onclick="addText('5L orangejuice')">5L juice</button>
+              <button type="button" onclick="addText(' + ')">+</button>
+              <button type="button" onclick="addText('5gr orangium')">5gr O</button>
+              <button type="button" onclick="addText(' * 8')">× 8</button>
+              <button type="button" onclick="clearFormula()">CLR</button>
+              <button class="submit" type="submit">Calculate batch</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="reactor-visual">
+          <div class="reactor-core">
+            <div class="ring r1"></div>
+            <div class="ring r2"></div>
+            <div class="ring r3"></div>
+            <div class="core-light"></div>
+          </div>
+
+          <div class="mini-graph">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <p>REACTOR MIX VISUALIZER</p>
+        </aside>
+      </div>
+
+      {% if result is not none %}
+      <section class="output-card">
+        <div class="output-head">
+          <h2>Calculator Output</h2>
+          <span>Batch {{ batch }}</span>
+        </div>
+
+        <pre>{{ result }}</pre>
+
+        <div class="telemetry">
+          <div>
+            <span>Measured enrichment</span>
+            <strong>{{ enrichment }}%</strong>
+          </div>
+          <div>
+            <span>Validation</span>
+            <strong>{{ "APPROVED" if enrichment == 8.0 else "RETRY" }}</strong>
+          </div>
+          <div>
+            <span>Safety valve</span>
+            <strong>{{ status.valve if status else "LOCKED" }}</strong>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+      <footer>
+        OPP-REDIS-CALC-01 · Internal reactor application · Do not expose outside backoffice network
+      </footer>
+
+      <a class="back-link" href="/">← Back to system note</a>
+    </section>
+  </main>
+
+  <script>
+    function addText(value) {
+      const box = document.getElementById("formula");
+      const start = box.selectionStart;
+      const end = box.selectionEnd;
+      box.value = box.value.substring(0, start) + value + box.value.substring(end);
+      box.focus();
+      box.selectionStart = box.selectionEnd = start + value.length;
+    }
+
+    function clearFormula() {
+      const box = document.getElementById("formula");
+      box.value = "";
+      box.focus();
+    }
+  </script>
+</body>
+</html>

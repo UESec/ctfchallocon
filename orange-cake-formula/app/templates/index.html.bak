@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orange Cake Formula Calculator</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="page">
+    <section class="panel">
+      <div class="statusbar">
+        <span class="dot"></span>
+        <span>FORMULA CONSOLE</span>
+        <span class="status-right">8% TARGET</span>
+      </div>
+
+      <div class="header">
+        <div class="reactor-icon">☢️</div>
+        <div>
+          <h1>Orange Cake Calculator</h1>
+          <p class="subtitle">Citrus enrichment formula validator</p>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div>
+          <span class="label">Reactor target</span>
+          <strong>8%</strong>
+        </div>
+        <div>
+          <span class="label">Formula mode</span>
+          <strong>Normalization</strong>
+        </div>
+        <div>
+          <span class="label">Validation</span>
+          <strong>Internal</strong>
+        </div>
+      </div>
+
+      <form method="POST" action="/calculate">
+        <label for="formula">Formula input</label>
+        <textarea
+          id="formula"
+          name="formula"
+          rows="5"
+          spellcheck="false"
+          placeholder="Example: 5 * orangejuice + 5 * orangium">{{ formula }}</textarea>
+
+        <button type="submit">Calculate enrichment batch</button>
+      </form>
+
+      {% if result is not none %}
+      <section class="result">
+        <h2>Calculator output</h2>
+        <pre>{{ result }}</pre>
+      </section>
+      {% endif %}
+
+      {% if error %}
+      <section class="error">
+        <h2>Formula parser warning</h2>
+        <p>{{ error }}</p>
+        {% if debug %}
+        <details>
+          <summary>Backend trace</summary>
+          <pre>{{ debug }}</pre>
+        </details>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      <p class="footer">
+        OPP-REDIS-CALC-01 · Orange Power Plant internal tooling · Do not expose outside backoffice network
+      </p>
+
+      <a class="link" href="/">← Back to system note</a>
+    </section>
+  </main>
+</body>
+</html>
