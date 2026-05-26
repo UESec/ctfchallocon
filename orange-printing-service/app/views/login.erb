@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Orange Plant Reception Printer</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="panel">
+      <div class="brand-row">
+        <div class="logo">🍊</div>
+        <div>
+          <h1>Orange Power Plant</h1>
+          <p>Reception Printer Configuration Console</p>
+        </div>
+      </div>
+
+      <div class="notice">
+        Backoffice printer diagnostics are restricted to plant operators.
+      </div>
+
+      <form method="post" action="/login" class="login-form">
+        <label for="username">Operator ID</label>
+        <input id="username" name="username" type="text" autocomplete="off">
+
+        <label for="password">Access phrase</label>
+        <input id="password" name="password" type="password">
+
+        <button type="submit">Unlock printer console</button>
+      </form>
+
+      <p id="failed" class="failed">
+        Login failed. Reception operator credentials required.
+      </p>
+
+      <div class="footer-note">
+        System: OPP-RECEPTION-PRN-01 · Safety zone: Backoffice
+      </div>
+    </section>
+  </main>
+
+  <script>
+    if (window.location.hash === "#failed_login") {
+      document.getElementById("failed").style.display = "block";
+    }
+  </script>
+</body>
+</html>

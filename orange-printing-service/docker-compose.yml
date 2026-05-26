@@ -1,0 +1,18 @@
+services:
+  orange-printing-service:
+    build: .
+    container_name: orange-printing-service
+    restart: unless-stopped
+    ports:
+      - "8080:4567"
+    networks:
+      - orange_ctf_net
+    read_only: false
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+networks:
+  orange_ctf_net:
+    driver: bridge
