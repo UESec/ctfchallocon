@@ -1,0 +1,7 @@
+services:
+  ransomware-backup-server:
+    build: .
+    container_name: ransomware-backup-server
+    restart: unless-stopped
+    ports:
+      - "8090:5000"

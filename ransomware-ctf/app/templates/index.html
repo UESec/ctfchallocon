@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Orange Backup Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="alarm-glow"></div>
+
+<main class="shell">
+    <section class="topbar">
+        <div>
+            <span class="status-dot"></span>
+            ORANGE POWER PLANT BACKUP SERVER
+        </div>
+        <div class="timer">
+            <span>Leak timer</span>
+            <strong id="countdown">48:00:00</strong>
+        </div>
+    </section>
+
+    <section class="hero">
+        <div class="skull">☠</div>
+        <div>
+            <h1>Backup Server Compromised</h1>
+            <p>
+                The Orange Power Plant backup host is no longer responding normally.
+                Four files were found renamed with a <code>.cl0p</code> extension.
+            </p>
+        </div>
+    </section>
+
+    <section class="incident-grid">
+        <div class="panel">
+            <h2>Incident status</h2>
+            <div class="metric danger">
+                <span>Encryption</span>
+                <strong>ACTIVE</strong>
+            </div>
+            <div class="metric">
+                <span>Backup integrity</span>
+                <strong>FAILED</strong>
+            </div>
+            <div class="metric">
+                <span>Threat actor</span>
+                <strong>Kimsuky</strong>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Server telemetry</h2>
+            <div class="bars">
+                <span style="height: 38%"></span>
+                <span style="height: 61%"></span>
+                <span style="height: 82%"></span>
+                <span style="height: 45%"></span>
+                <span style="height: 92%"></span>
+                <span style="height: 73%"></span>
+                <span style="height: 55%"></span>
+            </div>
+            <p class="small">OPP-BACKUP-2024 · Redis path observed · Recovery locked</p>
+        </div>
+
+        <div class="panel">
+            <h2>Operator note</h2>
+            <p>
+                SOC manager Fish_ marked this host as the next step after the Redis incident.
+                The attacker left a recovery utility behind, but the key is not stored on this server.
+            </p>
+        </div>
+    </section>
+
+    <section class="workspace">
+        <div class="file-browser">
+            <h2>Files</h2>
+
+            <h3>Encrypted</h3>
+            {% for file in encrypted_files %}
+            <button class="file encrypted-file" data-file="{{ file.name }}">
+                <span class="file-name">🔒 {{ file.name }}</span>
+                <span class="file-meta">{{ file.type }} · {{ file.size }}</span>
+            </button>
+            {% endfor %}
+
+            <h3>Readable</h3>
+            {% for file in system_files %}
+            <button class="file readable-file" data-file="{{ file.name }}">
+                <span class="file-name">📄 {{ file.name }}</span>
+                <span class="file-meta">{{ file.type }} · {{ file.size }}</span>
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="viewer">
+            <div class="viewer-head">
+                <span id="viewer-title">No file selected</span>
+                <span id="viewer-state">READY</span>
+            </div>
+            <pre id="viewer-content">Hover or click a file to inspect it.</pre>
+        </div>
+    </section>
+
+    <section class="decryptor-box">
+        <div>
+            <h2>Decryptor</h2>
+            <p>
+                Enter the recovery key received from the negotiation channel.
+            </p>
+        </div>
+
+        <div class="decrypt-form">
+            <input id="key-input" type="text" placeholder="Recovery key">
+            <button id="decrypt-button">Run decryptor</button>
+        </div>
+
+        <div id="decrypt-message" class="decrypt-message"></div>
+    </section>
+
+    <section class="decrypted-section hidden" id="decrypted-section">
+        <h2>Recovered files</h2>
+        <p class="small">
+            Files are readable again. Hover the recovered flag file to inspect the final content.
+        </p>
+        <div id="decrypted-files" class="recovered-grid"></div>
+    </section>
+</main>
+
+<div id="note-modal" class="modal hidden">
+    <div class="modal-card">
+        <button id="close-modal" class="close">×</button>
+        <h2>AAA_READ_AAA.txt</h2>
+        <pre>{{ ransom_note }}</pre>
+    </div>
+</div>
+
+<script>
+const viewerTitle = document.getElementById("viewer-title");
+const viewerState = document.getElementById("viewer-state");
+const viewerContent = document.getElementById("viewer-content");
+const modal = document.getElementById("note-modal");
+const closeModal = document.getElementById("close-modal");
+const decryptButton = document.getElementById("decrypt-button");
+const keyInput = document.getElementById("key-input");
+const decryptMessage = document.getElementById("decrypt-message");
+const decryptedSection = document.getElementById("decrypted-section");
+const decryptedFiles = document.getElementById("decrypted-files");
+
+function setViewer(title, state, content) {
+    viewerTitle.textContent = title;
+    viewerState.textContent = state;
+    viewerContent.textContent = content;
+}
+
+async function loadFile(filename, openModal = false) {
+    const res = await fetch(`/api/file/${encodeURIComponent(filename)}`);
+    const data = await res.json();
+
+    if (!data.ok) {
+        setViewer(filename, "ERROR", data.error || "Unknown error");
+        return;
+    }
+
+    if (filename === "AAA_READ_AAA.txt" && openModal) {
+        modal.classList.remove("hidden");
+    }
+
+    setViewer(
+        data.filename,
+        data.encrypted ? "ENCRYPTED" : "READABLE",
+        data.content
+    );
+}
+
+document.querySelectorAll(".file").forEach(button => {
+    const filename = button.dataset.file;
+
+    button.addEventListener("mouseenter", () => {
+        if (filename === "AAA_READ_AAA.txt") {
+            modal.classList.remove("hidden");
+        }
+        loadFile(filename, false);
+    });
+
+    button.addEventListener("click", () => {
+        loadFile(filename, filename === "AAA_READ_AAA.txt");
+    });
+});
+
+closeModal.addEventListener("click", () => {
+    modal.classList.add("hidden");
+});
+
+modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+        modal.classList.add("hidden");
+    }
+});
+
+decryptButton.addEventListener("click", async () => {
+    decryptMessage.textContent = "Running decryptor...";
+    decryptMessage.className = "decrypt-message";
+
+    const res = await fetch("/api/decrypt", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({key: keyInput.value})
+    });
+
+    const data = await res.json();
+
+    if (!data.ok) {
+        decryptMessage.textContent = data.message;
+        decryptMessage.classList.add("bad");
+        return;
+    }
+
+    decryptMessage.textContent = data.message;
+    decryptMessage.classList.add("good");
+
+    decryptedSection.classList.remove("hidden");
+    decryptedFiles.innerHTML = "";
+
+    Object.entries(data.files).forEach(([name, content]) => {
+        const card = document.createElement("div");
+        card.className = "recovered-file";
+
+        const title = document.createElement("h3");
+        title.textContent = "📂 " + name;
+
+        const pre = document.createElement("pre");
+        pre.textContent = name === "flag" ? "Hover to reveal recovered flag." : content;
+
+        if (name === "flag") {
+            card.classList.add("flag-card");
+            card.addEventListener("mouseenter", () => {
+                pre.textContent = content;
+            });
+            card.addEventListener("mouseleave", () => {
+                pre.textContent = "Hover to reveal recovered flag.";
+            });
+        }
+
+        card.appendChild(title);
+        card.appendChild(pre);
+        decryptedFiles.appendChild(card);
+    });
+});
+
+function startCountdown() {
+    let seconds = 48 * 60 * 60;
+    const el = document.getElementById("countdown");
+
+    setInterval(() => {
+        seconds = Math.max(0, seconds - 1);
+        const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+        const s = String(seconds % 60).padStart(2, "0");
+        el.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+}
+
+startCountdown();
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>OPP Backup Recovery Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+
+    <main class="page">
+        <section class="hero">
+            <div class="skull">☠</div>
+
+            <div>
+                <p class="kicker">ORANGE POWER PLANT INCIDENT RESPONSE</p>
+                <h1>BACKUP SERVER<br>COMPROMISED</h1>
+                <p class="intro">
+                    The OPP backup host no longer responds normally. Four files were renamed with a
+                    <span class="orange">.cl0p</span> extension after the Redis incident.
+                </p>
+            </div>
+        </section>
+
+        <section class="timer-panel">
+            <p>TIME LEFT BEFORE DATA PUBLICATION</p>
+            <div id="countdown">48:00:00</div>
+            <span>Kimsuky recovery window active</span>
+        </section>
+
+        <section class="grid">
+            <div class="card">
+                <h2>Incident status</h2>
+                <div class="row">
+                    <span>Encryption</span>
+                    <strong class="danger">ACTIVE</strong>
+                </div>
+                <div class="row">
+                    <span>Backup integrity</span>
+                    <strong>FAILED</strong>
+                </div>
+                <div class="row">
+                    <span>Threat actor</span>
+                    <strong>Kimsuky</strong>
+                </div>
+                <div class="row">
+                    <span>Recovery</span>
+                    <strong class="danger">KEY REQUIRED</strong>
+                </div>
+            </div>
+
+            <div class="card note-card">
+                <h2>Operator note</h2>
+                <p>
+                    SOC manager Fish_ marked this host as the next step after the Redis incident.
+                    A recovery utility was left behind, but the key is not stored on this server.
+                </p>
+                <p class="muted">
+                    The negotiation channel inside the ransom note appears to be the only recovery path.
+                </p>
+            </div>
+
+            <div class="card visual-card">
+                <h2>Encrypted volume</h2>
+                <div class="bars">
+                    <span style="height: 35%"></span>
+                    <span style="height: 70%"></span>
+                    <span style="height: 50%"></span>
+                    <span style="height: 85%"></span>
+                    <span style="height: 45%"></span>
+                    <span style="height: 65%"></span>
+                    <span style="height: 40%"></span>
+                </div>
+                <p class="muted">OPP-BACKUP-2024 · Redis path observed · Recovery locked</p>
+            </div>
+        </section>
+
+        <section class="workbench">
+            <aside class="files-panel">
+                <h2>Encrypted files</h2>
+
+                <div id="file-list">
+                    {% for file in encrypted_files %}
+                    <button class="file encrypted-file" data-real-name="{{ file.real_name }}">
+                        <span>🔒 {{ file.display_name }}</span>
+                        <small>{{ file.size }} bytes · encrypted</small>
+                    </button>
+                    {% endfor %}
+                </div>
+
+                <div class="ransom-note-trigger" id="ransom-note-trigger">
+                    <span>📄 AAA_READ_AAA.txt</span>
+                    <small>readable ransom note</small>
+                </div>
+            </aside>
+
+            <section class="terminal-panel">
+                <div class="terminal-header">
+                    <h2 id="viewer-title">AAA_READ_AAA.txt</h2>
+                    <span id="viewer-status">READABLE</span>
+                </div>
+
+                <pre id="viewer-content">{{ ransom_note }}</pre>
+            </section>
+        </section>
+
+        <section class="decryptor">
+            <div>
+                <p class="kicker">RECOVERY UTILITY</p>
+                <h2>decryptor</h2>
+                <p>
+                    Enter the recovery key received from the operator. If the key is valid,
+                    the encrypted filenames will be restored.
+                </p>
+            </div>
+
+            <div class="decrypt-form">
+                <input id="decrypt-key" type="password" placeholder="Enter decryption key">
+                <button id="decrypt-button">Start recovery</button>
+            </div>
+
+            <p id="decrypt-message"></p>
+        </section>
+    </main>
+
+    <div class="modal" id="note-modal">
+        <div class="modal-box">
+            <button id="close-modal">×</button>
+            <h2>AAA_READ_AAA.txt</h2>
+            <pre>{{ ransom_note }}</pre>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
